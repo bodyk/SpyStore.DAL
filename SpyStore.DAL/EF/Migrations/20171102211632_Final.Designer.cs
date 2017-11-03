@@ -11,9 +11,10 @@ using System;
 namespace SpyStore.DAL.EF.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20171102211632_Final")]
+    partial class Final
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,19 +147,16 @@ namespace SpyStore.DAL.EF.Migrations
 
                     b.Property<bool>("IsFeatured");
 
-                    b.Property<string>("ModelName")
+                    b.Property<string>("ModelNumber")
                         .HasMaxLength(50);
 
-                    b.Property<string>("ModelNumber")
+                    b.Property<string>("ModelName")
                         .HasMaxLength(50);
 
                     b.Property<string>("ProductImage")
                         .HasMaxLength(150);
 
                     b.Property<string>("ProductImageLarge")
-                        .HasMaxLength(150);
-
-                    b.Property<string>("ProductImageThumb")
                         .HasMaxLength(150);
 
                     b.Property<byte[]>("TimeStamp")

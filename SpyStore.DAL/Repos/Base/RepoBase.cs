@@ -12,19 +12,19 @@ namespace SpyStore.DAL.Repos.Base
 {
     public abstract class RepoBase<T> : IDisposable, IRepo<T> where T : EntityBase, new()
     {
-        protected readonly StoreContext _storeContext;
+        protected readonly StoreContext Context;
         protected DbSet<T> Table;
 
         protected RepoBase()
         {
-            _storeContext = new StoreContext();
-            Table = _storeContext.Set<T>();
+            Context = new StoreContext();
+            Table = Context.Set<T>();
         }
 
         protected RepoBase(DbContextOptions<StoreContext> options)
         {
-            _storeContext = new StoreContext(options);
-            Table = _storeContext.Set<T>();
+            Context = new StoreContext(options);
+            Table = Context.Set<T>();
         }
 
         private bool _disposed = false;
@@ -44,12 +44,12 @@ namespace SpyStore.DAL.Repos.Base
             {
                 // Free any other managed objects here
             }
-            _storeContext.Dispose();
+            Context.Dispose();
             _disposed = true;
         }
 
         public int Count => Table.Count();
-        public bool HasChanges => _storeContext.ChangeTracker.HasChanges();
+        public bool HasChanges => Context.ChangeTracker.HasChanges();
 
         public T Find(int? id) => Table.Find(id);
         public T GetFirst() => Table.FirstOrDefault();
@@ -109,13 +109,13 @@ namespace SpyStore.DAL.Repos.Base
                 }
                 throw new Exception("Unable to delete due to concurrency violation.");
             }
-            _storeContext.Entry(new T {Id = id, TimeStamp = timeStamp}).State = EntityState.Deleted;
+            Context.Entry(new T {Id = id, TimeStamp = timeStamp}).State = EntityState.Deleted;
             return persist ? SaveChanges() : 0;
         }
 
         internal T GetEntryFromChangeTracker(int? id)
         {
-            return _storeContext.ChangeTracker.Entries<T>().Select((EntityEntry e) => (T) e.Entity)
+            return Context.ChangeTracker.Entries<T>().Select((EntityEntry e) => (T) e.Entity)
                 .FirstOrDefault(x => x.Id == id);
         }
 
@@ -123,7 +123,7 @@ namespace SpyStore.DAL.Repos.Base
         {
             try
             {
-                return _storeContext.SaveChanges();
+                return Context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
             {
